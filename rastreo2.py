@@ -87,6 +87,8 @@ for x in range(1,13):
             pc = True
             npc = npc + 1
             listapc.append(t)
+            #Revisar lo que va  a pasar cuando estes en el ultimo punto de la lista, porque ya no habra dos siguientes puntos
+            
             if verificarTemperatura(lineas[x].temperatura[i+1]) != 0:
                 npc = npc +1
                 listapc.append(t)
@@ -112,13 +114,6 @@ for x in range(1,13):
             elif x == 1:
                 print()
         
-    
-    
-    
-    
-    
-    
-    
 #Buscar la ubicacion de la zona de calor de la seccion 2[13-24]
 for x in range(13,25):
     if x == 1:
