@@ -19,8 +19,13 @@ def verificarTemperatura(temperatura : float):
         return temperatura
     return 0
 #Calcula el promedio de los 3 puntos adyacentes fuera de rango
-def calcularPromedio(t1 : float ,t2 : float ,t3 : float):
-    return (t1 + t2 + t3)/3
+def calcularPromedio(listapc):
+    suma = 0
+    for pc in listapc:
+        suma = suma + int(pc)
+    return suma / len(listapc)
+
+
 
 def verificarNPC(n:int):
     if n >= 3:
@@ -78,6 +83,7 @@ npc = 0 # npc: número de punto crítico
 tp = 0 # tp: temperatura promedio
 tpm = 0 # tpm: temperatura promedio máxima 
 listapc = [] # pc1, pc2, pc3: punto crítico 1, 2 y 3. (temperatura)
+punto = 0 
 
 #Buscar la ubicacion de la zona de calor de la seccion 1[1-12]
 for x in range(1,13):
@@ -87,33 +93,86 @@ for x in range(1,13):
             pc = True
             npc = npc + 1
             listapc.append(t)
-            #Revisar lo que va  a pasar cuando estes en el ultimo punto de la lista, porque ya no habra dos siguientes puntos
-            
+            #!!!!!!!!Revisar lo que va  a pasar cuando estes en el ultimo punto de la lista, porque ya no habra dos siguientes puntos 
             if verificarTemperatura(lineas[x].temperatura[i+1]) != 0:
                 npc = npc +1
                 listapc.append(t)
-            elif verificarTemperatura(lineas[x].temperatura[i+2]) != 0:
+            if verificarTemperatura(lineas[x].temperatura[i+2]) != 0:
                 npc = npc +1
                 listapc.append(t)
             #11.Esquina inferior izquierda: 1; arriba, derecha. (+1, +3)
-            elif x == 1:
-                print()
+            if x == 1:
+                if verificarTemperatura(lineas[x+1].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x+3].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
             #10.Esquina superior izquierda: 3; abajo, derecha. (-1, +3)
-            elif x == 1:
-                print()
+            elif x == 3:
+                if verificarTemperatura(lineas[x-1].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x+3].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
             #9.Lateral izquierdo: 2; arriba, abajo, derecha. (+1, -1, +3)
-            elif x == 1:
-                print()
+            elif x == 2:
+                if verificarTemperatura(lineas[x+1].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x-1].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x-3].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
             #3.	Superior: 6, 9, 12, 15, 18, 21; abajo, izquierda, derecha. (-1, -3, +3)
-            elif x == 1:
-                print()
+            elif x == 6 or x == 9 or x == 12 or x == 15 or x == 18 or x == 21:
+                if verificarTemperatura(lineas[x-1].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x-3].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x+3].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
             #1.	Centro: 5, 8, 11, 14, 17, 20; arriba, abajo, izquierda, derecha. (+1,-1,-3, +3)
-            elif x == 1:
-                print()
+            elif  x == 5 or x == 8 or x == 11 or x == 14 or x == 17 or x == 20 :
+                if verificarTemperatura(lineas[x+1].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x-1].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x-3].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x+3].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
             #7.	Inferior: 4, 7, 10, 13, 16, 19; arriba, izquierda, derecha. (+1,-3, +3)
-            elif x == 1:
-                print()
+            elif  x == 4 or x == 7 or x == 10 or x == 13 or x == 16 or x == 19:
+                if verificarTemperatura(lineas[x+1].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x-3].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x+3].temperatura[i]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+        tp = calcularPromedio(listapc)
+        if tpm < tp:
+            punto = lineas[x].ubicacion[i]
+        pc = False
+        npc = 0
+        listapc.clear
         
+            
+    
+    
 #Buscar la ubicacion de la zona de calor de la seccion 2[13-24]
 for x in range(13,25):
     if x == 1:
