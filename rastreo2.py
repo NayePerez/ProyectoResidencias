@@ -94,12 +94,13 @@ for x in range(1,13):
             npc = npc + 1
             listapc.append(t)
             #!!!!!!!!Revisar lo que va  a pasar cuando estes en el ultimo punto de la lista, porque ya no habra dos siguientes puntos 
-            if verificarTemperatura(lineas[x].temperatura[i+1]) != 0:
-                npc = npc +1
-                listapc.append(t)
-            if verificarTemperatura(lineas[x].temperatura[i+2]) != 0:
-                npc = npc +1
-                listapc.append(t)
+            if i <= (len(lineas[x].temperatura)-2):
+                if verificarTemperatura(lineas[x].temperatura[i+1]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
+                if verificarTemperatura(lineas[x].temperatura[i+2]) != 0:
+                    npc = npc +1
+                    listapc.append(t)
             #11.Esquina inferior izquierda: 1; arriba, derecha. (+1, +3)
             if x == 1:
                 if verificarTemperatura(lineas[x+1].temperatura[i]) != 0:
@@ -166,11 +167,15 @@ for x in range(1,13):
         tp = calcularPromedio(listapc)
         if tpm < tp:
             punto = lineas[x].ubicacion[i]
+            tpm = tp
         pc = False
         npc = 0
-        listapc.clear
+        listapc.clear()
         
             
+    #cuando termine de recorrer todas las lineas de la seccion uno, tendremos dos resultados importantes que son;
+    #la tpm: la temperatura promedio maxima que se encontro 
+    #punto: la ubicacion central de donde se encuentra esa temperatura. 
     
     
 #Buscar la ubicacion de la zona de calor de la seccion 2[13-24]
