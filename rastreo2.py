@@ -47,7 +47,7 @@ lineas = [] #Lista de lineas
 
 
 #Leerá los 36 archivos de la carpeta resultados y guardará la informacion necesaria en la lista lineas 
-for x in range(1,13):
+for x in range(1,36):
     listaUbicaciones = [] #lista ubicaciones de cada punto en la línea
     listaTemperaturas = [] #lista temperaturas de cada punto en la línea 
     print("VALOR DE X " + str(x))
@@ -85,13 +85,13 @@ for x in range(1,13):
     
 
 tpm = 0 # tpm: temperatura promedio máxima 
-mnpc =  0
 
 punto = 0  #es la ubicacion central de la zona termica fuera de rango
 nlinea = 0
 
 #Buscar la ubicacion de la zona de calor de la seccion 1[1-12]
 for x in range(0,12):
+    mnpc =  0
     print("lineas[x].temperatura : " + str(x+1) + str(lineas[x].temperatura))
     for t in lineas[x].temperatura:
         i = 0 # k: índice del punto analizado.
