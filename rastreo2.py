@@ -2,8 +2,6 @@
 import os
 import re
 
-from zmq import STREAM_NOTIFY
-
 #Modela el objeto línea y sus atributos necesarios para realizar el rastreo
 class linea():
     def __init__(self, nombre, ubicacion, temperatura):
@@ -20,11 +18,51 @@ def verificarTemperatura(temperatura):
         #print("La temperatura de esta linea tambien esta fuera de rango" + str(temperatura))
         return temperatura
     return 0
+    
+def gradosFueraDeRango(tp_):
+    diferenciaT = 0
+    if tp_ < 22.0 or tp_ > 26.0:
+        if tp_ < 22.0 :
+            return 22.0 - tp
+        else :
+            return tp - 26.0  
 
+#puntos consecutivos 
+def caso0(lineas_, listapc_,x_,i_):
+    # Cuando se analice penultimo y ultimo punto de punto de la lista esto podria ocasionar un nullpointer ex
+    #Debido a esto se analiza hasta el antepenultimo punto
+    if i <= (len(lineas_[x_].temperatura)-2):
+        if verificarTemperatura(lineas_[x_].temperatura[i_+1]) != 0:
+            listapc_.append(lineas_[x_].temperatura[i_+1])
+        if verificarTemperatura(lineas_[x_].temperatura[i_+2]) != 0:
+            listapc_.append(lineas_[x_].temperatura[i_+2]) 
+     
 
+def caso1(lineas_, listapc_, x_, i_):
+    if verificarTemperatura(lineas_[x_+1].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_+1].temperatura[i_])
+    if verificarTemperatura(lineas_[x_-1].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_-1].temperatura[i_])
+    if verificarTemperatura(lineas_[x_-3].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_-3].temperatura[i_])
+    if verificarTemperatura(lineas_[x_+3].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_+3].temperatura[i_])
 
+def caso3(lineas_, listapc_, x_, i_):
+    if verificarTemperatura(lineas_[x_-1].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_-1].temperatura[i_])
+    if verificarTemperatura(lineas_[x_-3].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_-3].temperatura[i_])
+    if verificarTemperatura(lineas_[x_+3].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_+3].temperatura[i_])
 
-
+def caso7(lineas_, listapc_, x_, i_):
+    if verificarTemperatura(lineas_[x_+1].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_+1].temperatura[i_])
+    if verificarTemperatura(lineas_[x_-3].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_-3].temperatura[i_])
+    if verificarTemperatura(lineas_[x_+3].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_+3].temperatura[i_])
 
 def caso9(lineas_, listapc_, x_, i_):
     if verificarTemperatura(lineas_[x_+1].temperatura[i_]) != 0:
@@ -34,13 +72,17 @@ def caso9(lineas_, listapc_, x_, i_):
     if verificarTemperatura(lineas_[x_-3].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_-3].temperatura[i_])
     
-
 def caso10(lineas_, listapc_, x_, i_):
     if verificarTemperatura(lineas_[x_-1].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_-1].temperatura[i_])
     if verificarTemperatura(lineas_[x_+3].temperatura[i_]) != 0:
-        listapc_.append(lineas_[x_+3].temperatura[i_])   
+        listapc_.append(lineas_[x_+3].temperatura[i_]) 
 
+def caso11(lineas_, listapc_, x_, i_):
+    if verificarTemperatura(lineas_[x_+1].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_+1].temperatura[i_])
+    if verificarTemperatura(lineas_[x_+3].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_+3].temperatura[i_])
 #Calcula el promedio de los puntos cercanos fuera de rango
 def calcularPromedio(listapc):
     suma = 0.0
@@ -49,26 +91,16 @@ def calcularPromedio(listapc):
     print("suma : " + str(suma))
     return suma / float(len(listapc)) #para evitar la division entre 0
 
-
-
-def verificarNPC(n:int):
-    if n >= 3:
-        return True
-    return False
-
 #obtiene la ruta en donde estan ubicados los archivos con los resultados de comsol
 try:
     ruta = ''
     # ruta = os.path.abspath(ruta)+'/resultados' #Ruta linux
     ruta = os.path.abspath(ruta)+'\\Resultados' #Ruta win
 except:
-    reporteError('Error al obtener la ruta')
-    
+    reporteError('Error al obtener la ruta')    
 lineas = [] #Lista de lineas
-
-
 #Leerá los 36 archivos de la carpeta resultados y guardará la informacion necesaria en la lista lineas 
-for x in range(1,36):
+for x in range(1,37):
     listaUbicaciones = [] #lista ubicaciones de cada punto en la línea
     listaTemperaturas = [] #lista temperaturas de cada punto en la línea 
     #print("VALOR DE X " + str(x))
@@ -79,67 +111,44 @@ for x in range(1,36):
         data = f.read()
         f.close()
     except:
-        reporteError('Error al leer el archivo')
-        
+        reporteError('Error al leer el archivo')      
     #Transforma data en una lista de líneas del archivo 
     data = re.split('\n',data)
-    
     #Elimina de la lista las primeras 8 líneas
     for y in range(8):
-    # print(y)
-        data.pop(0)
-    
+        data.pop(0)   
     #Obtiene la ubicación y la temperatura y las guarda en su respectiva lista
     for d in data:
         datos = d.split();    
         listaUbicaciones.append(datos[0]) 
-        listaTemperaturas.append(datos[1]) 
-        
+        listaTemperaturas.append(datos[1])      
     #Inserta un nuevo objeto linea instanciado con los datos obtenidos en la lista lineas
-    lineas.append(linea(x, listaUbicaciones, listaTemperaturas))
-        
-    
+    lineas.append(linea(x, listaUbicaciones, listaTemperaturas))     
 ''' for l in lineas:
     print("Lista " + str(l.nombre) + "\n")
     for x in range(len(l.ubicacion)):        
         print(str(l.ubicacion[x]) + "-----" + str(l.temperatura[x]) )  '''
-    
-
 tpm = 0 # tpm: temperatura promedio máxima 
-
+diferenciaMax = 0
 punto = 0  #es la ubicacion central de la zona termica fuera de rango
-nlinea = 0
-
-#Buscar la ubicacion de la zona de calor de la seccion 1[1-12]
-for x in range(0,12):
-    mnpc =  0
-    #print("lineas[x].temperatura : " + str(x+1) + str(lineas[x].temperatura))
+nlinea = 0 #numero de línea de la zona termica fuera de rango
+#Buscar la ubicacion de la zona termica fuera de rango de la seccion 1[1-12]
+for x in range(12):
     for t in lineas[x].temperatura:
         i = 0 # k: índice del punto analizado.
         pc =  False  # pc: punto crítico boolean
         p = 0 # tp: temperatura promedio
-        npc = 0
         tp = 0
         listapc = [] # pc1, pc2, pc3: punto crítico 1, 2 y 3. (temperatura)
         i = lineas[x].temperatura.index(t)
         #se leen los datos de temperatura de cada punto de la línea en busca de una temperatura fuera de rango
         if verificarTemperatura(t) != 0:
             pc = True
-            
             listapc.append(t)
-            # Cuando se analice penultimo y ultimo punto de punto de la lista esto podria ocasionar un nullpointer ex
-            #Debido a esto se analiza hasta el antepenultimo punto
-            if i <= (len(lineas[x].temperatura)-2):
-                if verificarTemperatura(lineas[x].temperatura[i+1]) != 0:
-                    listapc.append(lineas[x].temperatura[i+1])
-                if verificarTemperatura(lineas[x].temperatura[i+2]) != 0:
-                    listapc.append(lineas[x].temperatura[i+2]) 
+            caso0(lineas,listapc,x,i)
             #11.Esquina inferior izquierda: 1; arriba, derecha. (+1, +3)
             if x == 1:
-                if verificarTemperatura(lineas[x+1].temperatura[i]) != 0:
-                    listapc.append(lineas[x+1].temperatura[i])
-                if verificarTemperatura(lineas[x+3].temperatura[i]) != 0:
-                    listapc.append(lineas[x+3].temperatura[i])
+                caso11(lineas, listapc, x, i)
             #10.Esquina superior izquierda: 3; abajo, derecha. (-1, +3)
             elif x == 3:
                 caso10(lineas,listapc,x,i)
@@ -147,53 +156,29 @@ for x in range(0,12):
                 caso9(lineas, listapc, x, i)
             #3.	Superior: 6, 9, 12, 15, 18, 21; abajo, izquierda, derecha. (-1, -3, +3)
             elif x == 6 or x == 9 or x == 12 or x == 15 or x == 18 or x == 21:
-                if verificarTemperatura(lineas[x-1].temperatura[i]) != 0:
-                    listapc.append(lineas[x-1].temperatura[i])
-                if verificarTemperatura(lineas[x-3].temperatura[i]) != 0:
-                    listapc.append(lineas[x-3].temperatura[i])
-                # print("Valor de x " + str(x))
-                # print("Nombre de la linea " + str(lineas[x+2].nombre))
-                # print("valor de i " + str(i))
-                if verificarTemperatura(lineas[x+3].temperatura[i]) != 0:
-                    listapc.append(lineas[x+3].temperatura[i])
+                caso3(lineas,listapc,x,i)
             #1.	Centro: 5, 8, 11, 14, 17, 20; arriba, abajo, izquierda, derecha. (+1,-1,-3, +3)
             elif  x == 5 or x == 8 or x == 11 or x == 14 or x == 17 or x == 20 :
-                if verificarTemperatura(lineas[x+1].temperatura[i]) != 0:
-                    listapc.append(lineas[x+1].temperatura[i])
-                if verificarTemperatura(lineas[x-1].temperatura[i]) != 0:
-                    listapc.append(lineas[x-1].temperatura[i])
-                if verificarTemperatura(lineas[x-3].temperatura[i]) != 0:
-                    listapc.append(lineas[x-3].temperatura[i])
-                if verificarTemperatura(lineas[x+3].temperatura[i]) != 0:
-                    listapc.append(lineas[x+3].temperatura[i])
+                caso1(lineas,listapc,x,i)
             #7.	Inferior: 4, 7, 10, 13, 16, 19; arriba, izquierda, derecha. (+1,-3, +3)
             elif  x == 4 or x == 7 or x == 10 or x == 13 or x == 16 or x == 19:
-                if verificarTemperatura(lineas[x+1].temperatura[i]) != 0:
-                    listapc.append(lineas[x+1].temperatura[i])
-                if verificarTemperatura(lineas[x-3].temperatura[i]) != 0:
-                    listapc.append(lineas[x-3].temperatura[i])
-                if verificarTemperatura(lineas[x+3].temperatura[i]) != 0:
-                    listapc.append(lineas[x+3].temperatura[i])
+                caso7(lineas, listapc, x,i)
         
         
         if len(listapc) >= 3:       
             tp = calcularPromedio(listapc)     
-            print("TEMPERATURA PROMEDIO :" + str(tp))
-            mnpc = npc
-            if tpm <= tp:
+            if gradosFueraDeRango(tp) > diferenciaMax:
+                diferenciaMax = gradosFueraDeRango(tp)
+                tpm = tp
                 punto = lineas[x].ubicacion[i]
                 nlinea = x+1
-                tpm = tp
         
         print("Linea " + str(nlinea))
-        print("npc  " + str(npc))
-        print("mnpc " + str(mnpc))
         print("tpm " + str(tpm))
         print("tp " + str(tp))
         pc = False
         listapc.clear()
         i = 0
-        npc = 0
 
 print("Temperatura promedio maxima: " + str(tpm))
 print("Linea " + str(nlinea))
