@@ -13,23 +13,23 @@ def reporteError(mensaje):
     print(mensaje)   
     
 #Verifica si la temperatura de un punto cercano esta fuera de rango
-def verificarTemperatura(temperatura):
+def verificarTemperatura(temperatura, listapc__):
     if  float(temperatura) > 26.0 or  float(temperatura) < 22.0:
         #print("La temperatura de esta linea tambien esta fuera de rango" + str(temperatura))
-        return temperatura
-    return 0
+        listapc__.append(temperatura)
+        return True
+    return False
     
 def gradosFueraDeRango(tp_):
-    diferenciaT = 0
     if tp_ < 22.0 or tp_ > 26.0:
         if tp_ < 22.0 :
-            return 22.0 - tp
+            return 22.0 - tp_
         else :
-            return tp - 26.0  
+            return tp_ - 26.0  
 
 #puntos consecutivos 
 def caso0(lineas_, listapc_,x_,i_):
-    # Cuando se analice penultimo y ultimo punto de punto de la lista esto podria ocasionar un nullpointer ex
+    #Cuando se analice penultimo y ultimo punto de punto de la lista esto podria ocasionar un nullpointer ex
     #Debido a esto se analiza hasta el antepenultimo punto
     if i <= (len(lineas_[x_].temperatura)-2):
         if verificarTemperatura(lineas_[x_].temperatura[i_+1]) != 0:
@@ -37,7 +37,7 @@ def caso0(lineas_, listapc_,x_,i_):
         if verificarTemperatura(lineas_[x_].temperatura[i_+2]) != 0:
             listapc_.append(lineas_[x_].temperatura[i_+2]) 
      
-
+#1. Centro: 5, 8, 11, 14, 17, 20; arriba, abajo, izquierda, derecha. (+1,-1,-3, +3)
 def caso1(lineas_, listapc_, x_, i_):
     if verificarTemperatura(lineas_[x_+1].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_+1].temperatura[i_])
@@ -48,14 +48,20 @@ def caso1(lineas_, listapc_, x_, i_):
     if verificarTemperatura(lineas_[x_+3].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_+3].temperatura[i_])
 
+#2.	Centro-23; arriba, abajo, izquierda, derecha. (+1,-1,-3, +2)
+
+#3.	Superior: 6, 9, 12, 15, 18, 21; abajo, izquierda, derecha. (-1, -3, +3)
 def caso3(lineas_, listapc_, x_, i_):
-    if verificarTemperatura(lineas_[x_-1].temperatura[i_]) != 0:
-        listapc_.append(lineas_[x_-1].temperatura[i_])
+    if verificarTemperatura(lineas_[x_-1].temperatura[i_],listapc_) != 0:
     if verificarTemperatura(lineas_[x_-3].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_-3].temperatura[i_])
     if verificarTemperatura(lineas_[x_+3].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_+3].temperatura[i_])
+# 4. Superior-24; abajo, izquierda, derecha. (-1, -3, +2)
+# 5. Superior-26, 28, 30, 32; abajo, izquierda, derecha. (-1, -2, +2)
+# 6. Lineal: 33, 34, 35; izquierda, derecha. (-1, +1)
 
+# 7. Inferior: 4, 7, 10, 13, 16, 19; arriba, izquierda, derecha. (+1,-3, +3)
 def caso7(lineas_, listapc_, x_, i_):
     if verificarTemperatura(lineas_[x_+1].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_+1].temperatura[i_])
@@ -63,7 +69,9 @@ def caso7(lineas_, listapc_, x_, i_):
         listapc_.append(lineas_[x_-3].temperatura[i_])
     if verificarTemperatura(lineas_[x_+3].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_+3].temperatura[i_])
+#8.	Inferior-25, 27, 29; arriba, izquierda, derecha. (+1, -2, +3)
 
+#9.	Lateral izquierdo: 2; arriba, abajo, derecha. (+1, -1, +3)
 def caso9(lineas_, listapc_, x_, i_):
     if verificarTemperatura(lineas_[x_+1].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_+1].temperatura[i_])
@@ -71,18 +79,22 @@ def caso9(lineas_, listapc_, x_, i_):
        listapc_.append(lineas_[x_-1].temperatura[i_])
     if verificarTemperatura(lineas_[x_-3].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_-3].temperatura[i_])
-    
+# 10.	Esquina superior izquierda: 3; abajo, derecha. (-1, +3) 
 def caso10(lineas_, listapc_, x_, i_):
     if verificarTemperatura(lineas_[x_-1].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_-1].temperatura[i_])
     if verificarTemperatura(lineas_[x_+3].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_+3].temperatura[i_]) 
-
+# 11.	Esquina inferior izquierda: 1; arriba, derecha. (+1, +3)
 def caso11(lineas_, listapc_, x_, i_):
     if verificarTemperatura(lineas_[x_+1].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_+1].temperatura[i_])
     if verificarTemperatura(lineas_[x_+3].temperatura[i_]) != 0:
         listapc_.append(lineas_[x_+3].temperatura[i_])
+# 12.	Esquina inferior derecha-22; arriba, izquierda. (+1, -3)
+# 13.	Esquina inferior derecha-31; arriba, izquierda. (+1,-2)
+# 14.	Esquina lateral derecha: 36; izquierda. (-1) 
+
 #Calcula el promedio de los puntos cercanos fuera de rango
 def calcularPromedio(listapc):
     suma = 0.0
