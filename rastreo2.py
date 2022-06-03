@@ -21,6 +21,26 @@ def verificarTemperatura(temperatura):
         return temperatura
     return 0
 
+
+
+
+
+
+def caso9(lineas_, listapc_, x_, i_):
+    if verificarTemperatura(lineas_[x_+1].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_+1].temperatura[i_])
+    if verificarTemperatura(lineas_[x_-1].temperatura[i_]) != 0:
+       listapc_.append(lineas_[x_-1].temperatura[i_])
+    if verificarTemperatura(lineas_[x_-3].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_-3].temperatura[i_])
+    
+
+def caso10(lineas_, listapc_, x_, i_):
+    if verificarTemperatura(lineas_[x_-1].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_-1].temperatura[i_])
+    if verificarTemperatura(lineas_[x_+3].temperatura[i_]) != 0:
+        listapc_.append(lineas_[x_+3].temperatura[i_])   
+
 #Calcula el promedio de los puntos cercanos fuera de rango
 def calcularPromedio(listapc):
     suma = 0.0
@@ -122,18 +142,9 @@ for x in range(0,12):
                     listapc.append(lineas[x+3].temperatura[i])
             #10.Esquina superior izquierda: 3; abajo, derecha. (-1, +3)
             elif x == 3:
-                if verificarTemperatura(lineas[x-1].temperatura[i]) != 0:
-                    listapc.append(lineas[x-1].temperatura[i])
-                if verificarTemperatura(lineas[x+3].temperatura[i]) != 0:
-                    listapc.append(lineas[x+3].temperatura[i])
-            #9.Lateral izquierdo: 2; arriba, abajo, derecha. (+1, -1, +3)
+                caso10(lineas,listapc,x,i)
             elif x == 2:
-                if verificarTemperatura(lineas[x+1].temperatura[i]) != 0:
-                    listapc.append(lineas[x+1].temperatura[i])
-                if verificarTemperatura(lineas[x-1].temperatura[i]) != 0:
-                    listapc.append(lineas[x-1].temperatura[i])
-                if verificarTemperatura(lineas[x-3].temperatura[i]) != 0:
-                    listapc.append(lineas[x-3].temperatura[i])
+                caso9(lineas, listapc, x, i)
             #3.	Superior: 6, 9, 12, 15, 18, 21; abajo, izquierda, derecha. (-1, -3, +3)
             elif x == 6 or x == 9 or x == 12 or x == 15 or x == 18 or x == 21:
                 if verificarTemperatura(lineas[x-1].temperatura[i]) != 0:
