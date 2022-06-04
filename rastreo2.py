@@ -1,6 +1,7 @@
 
 import os
 import re
+from unittest import case
 
 #Modela el objeto línea y sus atributos necesarios para realizar el rastreo
 class linea():
@@ -32,7 +33,7 @@ def getTemperaturaPromedio(listapc):
 # El penultimo y ultimo punto de  la lista ocasiona un nullpointer exception
 def caso0(lineas_, listapc_,x_,i_):
     print("x: " + str(x_) + "index" + str(i_))
-    if i_ <= (len(lineas_[x_].temperatura)-3): #OJO AQUI REVISAR
+    if i_ <= (len(lineas_[x_].temperatura)-3): #le quita dos posiciones, pero se usa un 3 porque la lista comienza desde 0
         checkTemperaturaFueraDeRango(lineas_[x_].temperatura[i_+1],listapc_)
         checkTemperaturaFueraDeRango(lineas_[x_].temperatura[i_+2], listapc_)  
 
@@ -66,7 +67,7 @@ def caso5(lineas_, listapc_, x_, i_):
 # 6. Lineal: 33, 34, 35; izquierda, derecha. (-1, +1)
 def caso6(lineas_, listapc_, x_, i_):
     checkTemperaturaFueraDeRango(lineas_[x_-1].temperatura[i_], listapc_) 
-    checkTemperaturaFueraDeRango(lineas_[x_+1].temperatura[i_], listapc_) 
+    checkTemperaturaFueraDeRango(lineas_[x_+1].temperatura[i_], listapc_) #error aqui index 36
 # 7. Inferior: 4, 7, 10, 13, 16, 19; arriba, izquierda, derecha. (+1,-3, +3)
 def caso7(lineas_, listapc_, x_, i_):
     checkTemperaturaFueraDeRango(lineas_[x_+1].temperatura[i_], listapc_) 
@@ -99,7 +100,7 @@ def caso13(lineas_, listapc_, x_, i_):
     checkTemperaturaFueraDeRango(lineas_[x_+1].temperatura[i_], listapc_) 
     checkTemperaturaFueraDeRango(lineas_[x_-2].temperatura[i_], listapc_) 
 # 14. Esquina lateral derecha: 36; izquierda. (-1) 
-def caso1(lineas_, listapc_, x_, i_):
+def caso14(lineas_, listapc_, x_, i_):
     checkTemperaturaFueraDeRango(lineas_[x_-1].temperatura[i_], listapc_) 
 
 def setZTFR(seccion, tp_, x_, i_, lineas_, temperaturaZTFR_, diferenciaZTFR_, ubicacionZTFR_, nlineaZTFR_):
@@ -151,6 +152,7 @@ nlineaZTFR = [0,0,0,0] #Numero de línea donde esta ubicada la zona termica fuer
 
 #Buscar la ubicacion de la zona termica fuera de rango de la seccion 1[1-12]
 for x in range(36):
+    index = x+1
     for t in lineas[x].temperatura:
         pc =  False  # pc: punto crítico boolean
         tp = 0 # tp: temperatura promedio
@@ -158,28 +160,44 @@ for x in range(36):
         i = lineas[x].temperatura.index(t)
         #se leen los datos de temperatura de cada punto de la línea en busca de una temperatura fuera de rango
         if checkTemperaturaFueraDeRango(t, listapc) == True:
-            pc = True
-            listapc.append(t)
+            pc = True            
             caso0(lineas,listapc,x,i)
             #11.Esquina inferior izquierda: 1; arriba, derecha. (+1, +3)
-            if x == 1:
+            if index == 1:
                 caso11(lineas, listapc, x, i)
             #10.Esquina superior izquierda: 3; abajo, derecha. (-1, +3)
-            elif x == 3:
+            elif index == 3:
                 caso10(lineas,listapc,x,i)
-            elif x == 2:
+            elif index == 2:
                 caso9(lineas, listapc, x, i)
             #3.	Superior: 6, 9, 12, 15, 18, 21; abajo, izquierda, derecha. (-1, -3, +3)
-            elif x == 6 or x == 9 or x == 12 or x == 15 or x == 18 or x == 21:
+            elif index == 6 or index == 9 or index == 12 or index == 15 or index == 18 or index == 21:
                 caso3(lineas,listapc,x,i)
             #1.	Centro: 5, 8, 11, 14, 17, 20; arriba, abajo, izquierda, derecha. (+1,-1,-3, +3)
-            elif  x == 5 or x == 8 or x == 11 or x == 14 or x == 17 or x == 20 :
+            elif  index == 5 or index == 8 or index == 11 or index == 14 or index == 17 or index == 20 :
                 caso1(lineas,listapc,x,i)
             #7.	Inferior: 4, 7, 10, 13, 16, 19; arriba, izquierda, derecha. (+1,-3, +3)
-            elif  x == 4 or x == 7 or x == 10 or x == 13 or x == 16 or x == 19:
+            elif  index == 4 or index == 7 or index == 10 or index == 13 or index == 16 or index == 19:
                 caso7(lineas, listapc, x,i)
+            elif index == 22:
+                caso12(lineas,listapc,x,i)
+            elif index == 23:
+                caso2(lineas,listapc,x,i)
+            elif index == 24:
+                caso4(lineas,listapc,x,i)
+            elif index == 25 or index == 27 or index == 29:
+                caso8(lineas,listapc,x,i)
+            elif index == 26 or index == 28 or index == 30 or index == 32:
+                caso5(lineas,listapc,x,i)
+            elif index == 31:
+                caso13(lineas,listapc,x,i)
+            elif index == 33 or index == 34 or index == 35:
+                caso6(lineas,listapc,x,i)
+            elif index == 36:
+                caso14(lineas,listapc,x,i)
                 
-        if len(listapc) > 3:       #rEVISAR RAZONES DE PORQUE ACEPTA MAYOR A 2 CUANDO LE PONGO MAYOR O IGUAL A 3
+        if len(listapc) >= 3:       
+            print(listapc)
             tp = getTemperaturaPromedio(listapc)     
             if x < 12:
                 setZTFR(0,tp, x,i,lineas,temperaturaZTFR,diferenciaZTFR,ubicacionZTFR,nlineaZTFR)
@@ -187,7 +205,7 @@ for x in range(36):
                 setZTFR(1,tp, x,i,lineas,temperaturaZTFR,diferenciaZTFR,ubicacionZTFR,nlineaZTFR)
             elif x < 32:
                 setZTFR(2,tp, x,i,lineas,temperaturaZTFR,diferenciaZTFR,ubicacionZTFR,nlineaZTFR)
-            else:
+            elif x < 36:
                 setZTFR(3,tp, x,i,lineas,temperaturaZTFR,diferenciaZTFR,ubicacionZTFR,nlineaZTFR)
                     
 
