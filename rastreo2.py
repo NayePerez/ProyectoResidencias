@@ -213,7 +213,16 @@ print("Temperatura promedio: " + str(temperaturaZTFR))
 print("Linea: " + str(nlineaZTFR))
 print(" Ubicacion central de la zona de termica fuera de rango: " + str(ubicacionZTFR))
 
-    
+                        
+try:
+    # Procesamiento para escribir en el fichero
+    f = open('resultados.txt', 'w')
+    f.write(str(nlineaZTFR[0]) + ' ' + str(ubicacionZTFR[0]) + ' ' + str(temperaturaZTFR[0]) + '\n')
+    f.write(str(nlineaZTFR[1]) + ' ' + str(ubicacionZTFR[1]) + ' ' + str(temperaturaZTFR[1]) + '\n')
+    f.write(str(nlineaZTFR[2]) + ' ' + str(ubicacionZTFR[2]) + ' ' + str(temperaturaZTFR[2]) + '\n')
+    f.write(str(nlineaZTFR[3]) + ' ' + str(ubicacionZTFR[3]) + ' ' + str(temperaturaZTFR[3]) + '\n')
+finally:
+    f.close()
     
 #Buscar la ubicacion de la zona de calor de la seccion 2[13-24]
 
