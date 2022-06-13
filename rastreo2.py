@@ -154,13 +154,11 @@ nlineaZTFR = [0,0,0,0] #Numero de línea donde esta ubicada la zona termica fuer
 for x in range(36):
     index = x+1
     for t in lineas[x].temperatura:
-        pc =  False  # pc: punto crítico boolean
         tp = 0 # tp: temperatura promedio
         listapc = [] # pc1, pc2, pc3: punto crítico 1, 2 y 3. (temperatura)
         i = lineas[x].temperatura.index(t)
         #se leen los datos de temperatura de cada punto de la línea en busca de una temperatura fuera de rango
         if checkTemperaturaFueraDeRango(t, listapc) == True:
-            pc = True            
             caso0(lineas,listapc,x,i)
             #11.Esquina inferior izquierda: 1; arriba, derecha. (+1, +3)
             if index == 1:
